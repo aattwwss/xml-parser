@@ -1,14 +1,16 @@
 package com.aattwwss;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class Parser {
 
     public static Node parse(List<Lexer.Token> tokens) {
-        Node root = new Node("root", "");
-        List<Node> nodes = new ArrayList<>();
+        Node root = null;
+        Map<String, List<Node>> adjList = new HashMap<>();
 
         Stack<String> stack = new Stack<>();
         int i = 0;
@@ -54,9 +56,20 @@ public class Parser {
                         throw new RuntimeException("mismatched tag");
                     }
 
-                    nodes.add(new Node(startTagName, content));
+                    Node node = new Node(startTagName, content);
+                    if (stack.isEmpty()) {
+                        if (root != null) {
+                            throw new RuntimeException("only one root allowed");
+                        } else {
+                            root = node;
+                        }
+                    } else {
+                        String parent = stack.peek();
+                        List<Node> children = adjList.getOrDefault(parent, new ArrayList<>());
+                        children.add(node);
+                        adjList.put(parent, children);
+                    }
                     content = null;
-
                     i += 3;
                     break;
                 case R_TAG:
@@ -65,7 +78,6 @@ public class Parser {
             }
 
         }
-        root.setChildren(nodes);
         return root;
     }
 }
