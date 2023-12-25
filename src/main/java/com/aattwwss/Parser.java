@@ -1,26 +1,19 @@
 package com.aattwwss;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 public class Parser {
 
-    public static class Tag {
-        public final String name;
-        public final boolean isStart;
-
-        public Tag(String name, boolean isStart) {
-            this.name = name;
-            this.isStart = isStart;
-        }
-    }
     public static Node parse(List<Lexer.Token> tokens) {
         Node root = new Node("root", "");
+        List<Node> nodes = new ArrayList<>();
 
         Stack<String> stack = new Stack<>();
         int i = 0;
+        String content = null;
         while (i < tokens.size()) {
-            String content = null;
             Lexer.Token token = tokens.get(i);
             if (token.type != Lexer.Type.L_START_TAG && token.type != Lexer.Type.L_END_TAG && token.type != Lexer.Type.CONTENT) {
                 i++;
@@ -41,9 +34,10 @@ public class Parser {
                     stack.push(tokens.get(i + 1).value);
                     i += 3;
                     break;
-                    case CONTENT:
-                        i++;
-                        break;
+                case CONTENT:
+                    content = token.value;
+                    i++;
+                    break;
                 case L_END_TAG:
                     // end with an open end tag
                     if (i + 1 == tokens.size() || i + 2 == tokens.size()) {
@@ -55,16 +49,24 @@ public class Parser {
                         throw new RuntimeException("Invalid end tag");
                     }
 
-                    String key = stack.pop();
-                    if (!key.equals(tokens.get(i + 1).value)) {
+                    if (stack.isEmpty()) {
+                        throw new RuntimeException("missing start tag");
+                    }
+
+                    String startTagName = stack.pop();
+                    if (!startTagName.equals(tokens.get(i + 1).value)) {
                         throw new RuntimeException("mismatched tag");
                     }
-                    Node node = new Node(key, key);
+
+                    nodes.add(new Node(startTagName, content));
+                    content = null;
+
                     i += 3;
                     break;
             }
 
         }
+        root.setChildren(nodes);
         return root;
     }
 }
