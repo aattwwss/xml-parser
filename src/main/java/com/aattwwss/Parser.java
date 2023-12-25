@@ -15,10 +15,6 @@ public class Parser {
         String content = null;
         while (i < tokens.size()) {
             Lexer.Token token = tokens.get(i);
-            if (token.type != Lexer.Type.L_START_TAG && token.type != Lexer.Type.L_END_TAG && token.type != Lexer.Type.CONTENT) {
-                i++;
-                continue;
-            }
             switch (token.type) {
                 case L_START_TAG:
                     // end with an open start tag
@@ -62,6 +58,9 @@ public class Parser {
                     content = null;
 
                     i += 3;
+                    break;
+                case R_TAG:
+                    i++;
                     break;
             }
 
