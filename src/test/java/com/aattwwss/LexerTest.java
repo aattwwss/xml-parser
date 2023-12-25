@@ -9,18 +9,18 @@ public class LexerTest {
     public void testTokenise() {
         String input = "<Design><Code>hello world</Code></Design>";
         Lexer.Token[] expected = {
-                new Lexer.Token(Lexer.Type.L_OPEN_TAG, "<"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Design"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Design"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
-                new Lexer.Token(Lexer.Type.L_OPEN_TAG, "<"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Code"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Code"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
                 new Lexer.Token(Lexer.Type.CONTENT, "hello world"),
-                new Lexer.Token(Lexer.Type.L_CLOSE_TAG, "</"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Code"),
+                new Lexer.Token(Lexer.Type.L_END_TAG, "</"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Code"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
-                new Lexer.Token(Lexer.Type.L_CLOSE_TAG, "</"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Design"),
+                new Lexer.Token(Lexer.Type.L_END_TAG, "</"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Design"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">")
         };
 
@@ -36,18 +36,18 @@ public class LexerTest {
     public void testTokenise2() {
         String input = "<Design><Code>hello world<Code></Design>";
         Lexer.Token[] expected = {
-                new Lexer.Token(Lexer.Type.L_OPEN_TAG, "<"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Design"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Design"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
-                new Lexer.Token(Lexer.Type.L_OPEN_TAG, "<"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Code"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Code"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
                 new Lexer.Token(Lexer.Type.CONTENT, "hello world"),
-                new Lexer.Token(Lexer.Type.L_OPEN_TAG, "<"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Code"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Code"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
-                new Lexer.Token(Lexer.Type.L_CLOSE_TAG, "</"),
-                new Lexer.Token(Lexer.Type.CONTENT, "Design"),
+                new Lexer.Token(Lexer.Type.L_END_TAG, "</"),
+                new Lexer.Token(Lexer.Type.TAG_NAME, "Design"),
                 new Lexer.Token(Lexer.Type.R_TAG, ">")
         };
 

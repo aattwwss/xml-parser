@@ -5,9 +5,10 @@ import java.util.List;
 
 public class Lexer {
     public static enum Type {
-        L_OPEN_TAG,
-        L_CLOSE_TAG,
+        L_START_TAG,
+        L_END_TAG,
         R_TAG,
+        TAG_NAME,
         CONTENT
     }
 
@@ -29,16 +30,20 @@ public class Lexer {
     public static List<Token> tokenise(String input) {
         final List<Token> tokens = new ArrayList<>();
         int i = 0;
+        boolean inTag = false;
         while (i < input.length()) {
             char c = input.charAt(i);
             if (c == '<' && i != input.length() - 1 && input.charAt(i + 1) != '/') {
-                tokens.add(new Token(Type.L_OPEN_TAG, "<"));
+                tokens.add(new Token(Type.L_START_TAG, "<"));
+                inTag = true;
                 i++;
             } else if (c == '<' && i != input.length() - 1 && input.charAt(i + 1) == '/') {
-                tokens.add(new Token(Type.L_CLOSE_TAG, "</"));
+                tokens.add(new Token(Type.L_END_TAG, "</"));
+                inTag = true;
                 i += 2;
             } else if (c == '>' ) {
                 tokens.add(new Token(Type.R_TAG, ">"));
+                inTag = false;
                 i++;
             } else {
                 StringBuilder sb = new StringBuilder();
@@ -46,7 +51,7 @@ public class Lexer {
                     sb.append(input.charAt(i));
                     i++;
                 }
-                tokens.add(new Token(Type.CONTENT, sb.toString()));
+                tokens.add(new Token(inTag ? Type.TAG_NAME: Type.CONTENT, sb.toString()));
             }
         }
         return tokens;
