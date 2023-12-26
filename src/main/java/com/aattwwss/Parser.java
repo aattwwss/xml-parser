@@ -78,6 +78,20 @@ public class Parser {
             }
 
         }
+        return buildTree(root, adjList);
+    }
+
+    private static Node buildTree(Node root, Map<String, List<Node>> adjList) {
+        if (root == null) {
+            return null;
+        }
+        List<Node> children = adjList.get(root.getKey());
+        if (children != null) {
+            root.setChildren(children);
+            for (Node child : children) {
+                buildTree(child, adjList);
+            }
+        }
         return root;
     }
 }
