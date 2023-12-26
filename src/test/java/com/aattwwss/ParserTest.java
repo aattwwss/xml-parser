@@ -8,7 +8,7 @@ import static org.junit.Assert.fail;
 
 public class ParserTest {
     @Test
-    public void testParse() {
+    public void testParse() throws ParserException {
         String input = "<root><A1><A2>A2 Content</A2><A3>A3 Content</A3><A4><A5>A5 Content</A5></A4></A1><B1>B1 Content</B1><B1>B1 Content 2</B1></root>";
         Node root = Parser.parse(Lexer.tokenise(input));
 
@@ -49,13 +49,97 @@ public class ParserTest {
     }
 
     @Test
-    public void testParse_whenError() {
+    public void testParse_whenIncompleteStartTagAtEnd_shouldThrowException() {
+        String input = "<Design><Code>hello world</Code></Design><End";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("Invalid start tag", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenIncompleteStartTag_shouldThrowException() {
+        String input = "<Design<Code>hello world</Code></Design>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("Invalid start tag", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenIncompleteEndTagAtEnd_shouldThrowException() {
+        String input = "<Design><Code>hello world</Code></Design";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("Invalid end tag", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenIncompleteEndTag_shouldThrowException() {
+        String input = "<Design><Code>hello world</Co</Design>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("Invalid end tag", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenStartTagMissing_shouldThrowException() {
+        String input = "<Design><Code>hello world</Code></Design></root>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("missing start tag for root", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenTagMismatch_shouldThrowException() {
+        String input = "<Design><Code>hello world</Foo></Design>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("mismatched tag", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenMultipleRoot_shouldThrowException() {
+        String input = "<Design>hello</Design><Code>world</Code>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("only one root allowed", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenTagNotClosed_shouldThrowException() {
         String input = "<Design><Code>hello world<Code></Design>";
 
         try {
             Parser.parse(Lexer.tokenise(input));
             fail("should throw exception");
-        } catch (RuntimeException e) {
+        } catch (ParserException e) {
             assertEquals("mismatched tag", e.getMessage());
         }
     }
