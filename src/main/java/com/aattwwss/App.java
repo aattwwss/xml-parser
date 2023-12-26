@@ -15,7 +15,6 @@ public class App
     private static boolean isXML(String input) {
         try {
             Node root = Parser.parse(input);
-            System.out.println(root.toString());
         } catch (ParserException e) {
             return false;
         }
