@@ -9,7 +9,7 @@ import static org.junit.Assert.fail;
 public class ParserTest {
     @Test
     public void testParse() throws ParserException {
-        String input = "<root><A1><A2>A2 Content</A2><A3>A3 Content</A3><A4><A5>A5 Content</A5></A4></A1><B1>B1 Content</B1><B1>B1 Content 2</B1></root>";
+        String input = "<root><A1><A2>A2 Content</A2><A3>A3 Content</A3><A4><A5>A5 Content</A5></A4></A1><B1>B1 Content</B1><B1>B1 Content 2<B2>B2 Content</B2></B1></root>";
         Node root = Parser.parse(Lexer.tokenise(input));
 
         assertEquals("root", root.getKey());
@@ -41,10 +41,15 @@ public class ParserTest {
         assertEquals("B1", nodeB.getKey());
         assertEquals("B1 Content", nodeB.getValue());
 
-        Node nodeB2 = root.getChildren().stream().filter(node -> node.getKey().equals("B1")).skip(1).findFirst().orElse(null);
+        nodeB = root.getChildren().stream().filter(node -> node.getKey().equals("B1")).skip(1).findFirst().orElse(null);
+        assertNotNull(nodeB);
+        assertEquals("B1", nodeB.getKey());
+        assertEquals("B1 Content 2", nodeB.getValue());
+
+        Node nodeB2 = nodeB.getChildren().stream().filter(node -> node.getKey().equals("B2")).findFirst().orElse(null);
         assertNotNull(nodeB2);
-        assertEquals("B1", nodeB2.getKey());
-        assertEquals("B1 Content 2", nodeB2.getValue());
+        assertEquals("B2", nodeB2.getKey());
+        assertEquals("B2 Content", nodeB2.getValue());
 
     }
 
@@ -133,7 +138,7 @@ public class ParserTest {
     }
 
     @Test
-    public void testParse_whenTagNotClosed_shouldThrowException() {
+    public void testParse_whenTagNotBalanced_shouldThrowException() {
         String input = "<Design><Code>hello world<Code></Design>";
 
         try {
@@ -141,6 +146,30 @@ public class ParserTest {
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("mismatched tag", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenTagNotClosed_shouldThrowException() {
+        String input = "<Design><Code>hello world";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("missing end tag for Code", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenNoTag_shouldThrowException() {
+        String input = "hello world";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("content must be between start and end tags", e.getMessage());
         }
     }
 

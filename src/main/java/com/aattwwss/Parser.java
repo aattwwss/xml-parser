@@ -5,12 +5,16 @@ import java.util.Stack;
 
 public class Parser {
 
+    public static Node parse(String s) throws ParserException {
+        List<Lexer.Token> tokens = Lexer.tokenise(s);
+        return parse(tokens);
+    }
+
     public static Node parse(List<Lexer.Token> tokens) throws ParserException {
         Node root = null;
-        Stack<String> tagNameStack = new Stack<>();
         Stack<Node> nodeStack = new Stack<>();
+
         int i = 0;
-        String content = null;
         while (i < tokens.size()) {
             Lexer.Token token = tokens.get(i);
             switch (token.type) {
@@ -26,12 +30,14 @@ public class Parser {
                     }
 
                     Lexer.Token startTagToken = tokens.get(i + 1);
-                    tagNameStack.push(startTagToken.value);
                     nodeStack.push(new Node(startTagToken.value, null));
                     i += 3;
                     break;
                 case CONTENT:
-                    content = token.value;
+                    if (nodeStack.isEmpty()) {
+                        throw new ParserException("content must be between start and end tags");
+                    }
+                    nodeStack.peek().setValue(token.value);
                     i++;
                     break;
                 case L_END_TAG:
@@ -47,18 +53,16 @@ public class Parser {
 
                     String endTagName = tokens.get(i + 1).value;
 
-                    if (tagNameStack.isEmpty()) {
+                    if (nodeStack.isEmpty()) {
                         throw new ParserException(String.format("missing start tag for %s", endTagName));
                     }
 
-                    String startTagName = tagNameStack.pop();
-                    if (!startTagName.equals(endTagName)) {
+                    Node node = nodeStack.pop();
+                    if (!node.getKey().equals(endTagName)) {
                         throw new ParserException("mismatched tag");
                     }
 
-                    Node node = nodeStack.pop();
-                    node.setValue(content);
-                    if (tagNameStack.isEmpty()) {
+                    if (nodeStack.isEmpty()) {
                         if (root != null) {
                             throw new ParserException("only one root allowed");
                         } else {
@@ -68,7 +72,6 @@ public class Parser {
                         Node parent = nodeStack.peek();
                         parent.getChildren().add(node);
                     }
-                    content = null;
                     i += 3;
                     break;
                 case R_TAG:
@@ -76,6 +79,9 @@ public class Parser {
                     break;
             }
 
+        }
+        if (!nodeStack.isEmpty()) {
+            throw new ParserException("missing end tag for " + nodeStack.pop().getKey());
         }
         return root;
     }
