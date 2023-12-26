@@ -1,17 +1,12 @@
 package com.aattwwss;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 public class Parser {
 
     public static Node parse(List<Lexer.Token> tokens) {
         Node root = null;
-        Map<Node, List<Node>> adjList = new HashMap<>();
-
         Stack<String> tagNameStack = new Stack<>();
         Stack<Node> nodeStack = new Stack<>();
         int i = 0;
@@ -72,9 +67,6 @@ public class Parser {
                     } else {
                         Node parent = nodeStack.peek();
                         parent.getChildren().add(node);
-//                        List<Node> children = adjList.getOrDefault(parent, new ArrayList<>());
-//                        children.add(node);
-//                        adjList.put(parent, children);
                     }
                     content = null;
                     i += 3;
