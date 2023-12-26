@@ -10,9 +10,10 @@ public class Parser {
 
     public static Node parse(List<Lexer.Token> tokens) {
         Node root = null;
-        Map<String, List<Node>> adjList = new HashMap<>();
+        Map<Node, List<Node>> adjList = new HashMap<>();
 
-        Stack<String> stack = new Stack<>();
+        Stack<String> tagNameStack = new Stack<>();
+        Stack<Node> nodeStack = new Stack<>();
         int i = 0;
         String content = null;
         while (i < tokens.size()) {
@@ -29,7 +30,9 @@ public class Parser {
                         throw new RuntimeException("Invalid start tag");
                     }
 
-                    stack.push(tokens.get(i + 1).value);
+                    Lexer.Token startTagToken = tokens.get(i + 1);
+                    tagNameStack.push(startTagToken.value);
+                    nodeStack.push(new Node(startTagToken.value, null));
                     i += 3;
                     break;
                 case CONTENT:
@@ -47,27 +50,31 @@ public class Parser {
                         throw new RuntimeException("Invalid end tag");
                     }
 
-                    if (stack.isEmpty()) {
-                        throw new RuntimeException("missing start tag");
+                    String endTagName = tokens.get(i + 1).value;
+
+                    if (tagNameStack.isEmpty()) {
+                        throw new RuntimeException(String.format("missing start tag for %s", endTagName));
                     }
 
-                    String startTagName = stack.pop();
-                    if (!startTagName.equals(tokens.get(i + 1).value)) {
+                    String startTagName = tagNameStack.pop();
+                    if (!startTagName.equals(endTagName)) {
                         throw new RuntimeException("mismatched tag");
                     }
 
-                    Node node = new Node(startTagName, content);
-                    if (stack.isEmpty()) {
+                    Node node = nodeStack.pop();
+                    node.setValue(content);
+                    if (tagNameStack.isEmpty()) {
                         if (root != null) {
                             throw new RuntimeException("only one root allowed");
                         } else {
                             root = node;
                         }
                     } else {
-                        String parent = stack.peek();
-                        List<Node> children = adjList.getOrDefault(parent, new ArrayList<>());
-                        children.add(node);
-                        adjList.put(parent, children);
+                        Node parent = nodeStack.peek();
+                        parent.getChildren().add(node);
+//                        List<Node> children = adjList.getOrDefault(parent, new ArrayList<>());
+//                        children.add(node);
+//                        adjList.put(parent, children);
                     }
                     content = null;
                     i += 3;
@@ -78,14 +85,14 @@ public class Parser {
             }
 
         }
-        return buildTree(root, adjList);
+        return root;
     }
 
-    private static Node buildTree(Node root, Map<String, List<Node>> adjList) {
+    private static Node buildTree(Node root, Map<Node, List<Node>> adjList) {
         if (root == null) {
             return null;
         }
-        List<Node> children = adjList.get(root.getKey());
+        List<Node> children = adjList.get(root);
         if (children != null) {
             root.setChildren(children);
             for (Node child : children) {
