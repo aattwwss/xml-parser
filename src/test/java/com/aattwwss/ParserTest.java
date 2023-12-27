@@ -173,4 +173,27 @@ public class ParserTest {
         }
     }
 
+    @Test
+    public void testParse_whenCloseAngleBracketWithoutOpen_shouldThrowException() {
+        String input = "<Design>Hello</Design>>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("missing <", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testParse_whenStartWithCloseBracket_shouldThrowException() {
+        String input = "><Design>Hello</Design>";
+
+        try {
+            Parser.parse(Lexer.tokenise(input));
+            fail("should throw exception");
+        } catch (ParserException e) {
+            assertEquals("missing <", e.getMessage());
+        }
+    }
 }

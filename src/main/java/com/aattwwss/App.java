@@ -2,22 +2,11 @@ package com.aattwwss;
 
 /**
  * Hello world!
- *
  */
-public class App 
-{
-    public static void main( String[] args )
-    {
+public class App {
+    public static void main(String[] args) {
         for (String s : args) {
-            System.out.println(isXML(s));
+            System.out.println(XMLUtil.isValidXML(s));
         }
-    }
-    private static boolean isXML(String input) {
-        try {
-            Node root = Parser.parse(input);
-        } catch (ParserException e) {
-            return false;
-        }
-        return true;
     }
 }

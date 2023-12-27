@@ -75,6 +75,16 @@ public class Parser {
                     i += 3;
                     break;
                 case R_TAG:
+                    // starting with close
+                    if (i==0 || i==1) {
+                        throw new ParserException("missing <");
+                    }
+
+                    // close without opening
+                    if (tokens.get(i - 1).type != Lexer.Type.TAG_NAME || tokens.get(i - 2).type != Lexer.Type.L_END_TAG || tokens.get(i - 2).type != Lexer.Type.L_START_TAG) {
+                        throw new ParserException("missing <");
+                    }
+
                     i++;
                     break;
             }
