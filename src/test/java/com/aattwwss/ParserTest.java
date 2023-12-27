@@ -10,7 +10,7 @@ public class ParserTest {
     @Test
     public void testParse() throws ParserException {
         String input = "<root><A1><A2>A2 Content</A2><A3>A3 Content</A3><A4><A5>A5 Content</A5></A4></A1><B1>B1 Content</B1><B1>B1 Content 2<B2>B2 Content</B2></B1></root>";
-        Node root = Parser.parse(Lexer.tokenise(input));
+        Node root = Parser.parse(input);
 
         assertEquals("root", root.getKey());
         Node nodeA = root.getChildren().stream().filter(node -> node.getKey().equals("A1")).findFirst().orElse(null);
@@ -58,7 +58,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world</Code></Design><End";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("Invalid start tag", e.getMessage());
@@ -70,7 +70,7 @@ public class ParserTest {
         String input = "<Design<Code>hello world</Code></Design>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("Invalid start tag", e.getMessage());
@@ -82,7 +82,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world</Code></Design";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("Invalid end tag", e.getMessage());
@@ -94,7 +94,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world</Co</Design>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("Invalid end tag", e.getMessage());
@@ -106,7 +106,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world</Code></Design></root>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("missing start tag for root", e.getMessage());
@@ -118,7 +118,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world</Foo></Design>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse((input));
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("mismatched tag", e.getMessage());
@@ -130,7 +130,7 @@ public class ParserTest {
         String input = "<Design>hello</Design><Code>world</Code>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse((input));
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("only one root allowed", e.getMessage());
@@ -142,7 +142,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world<Code></Design>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("mismatched tag", e.getMessage());
@@ -154,7 +154,7 @@ public class ParserTest {
         String input = "<Design><Code>hello world";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("missing end tag for Code", e.getMessage());
@@ -166,7 +166,7 @@ public class ParserTest {
         String input = "hello world";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("content must be between start and end tags", e.getMessage());
@@ -178,7 +178,7 @@ public class ParserTest {
         String input = "<Design>Hello</Design>>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("missing <", e.getMessage());
@@ -190,7 +190,7 @@ public class ParserTest {
         String input = "><Design>Hello</Design>";
 
         try {
-            Parser.parse(Lexer.tokenise(input));
+            Parser.parse(input);
             fail("should throw exception");
         } catch (ParserException e) {
             assertEquals("missing <", e.getMessage());

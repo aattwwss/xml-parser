@@ -34,7 +34,7 @@ public class LexerTest {
 
     @Test
     public void testTokenise2() {
-        String input = "<Design><Code>hello world<Code></Design>";
+        String input = "<Design><Code>hello world<Code></Design><</<";
         Lexer.Token[] expected = {
                 new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
                 new Lexer.Token(Lexer.Type.TAG_NAME, "Design"),
@@ -48,7 +48,10 @@ public class LexerTest {
                 new Lexer.Token(Lexer.Type.R_TAG, ">"),
                 new Lexer.Token(Lexer.Type.L_END_TAG, "</"),
                 new Lexer.Token(Lexer.Type.TAG_NAME, "Design"),
-                new Lexer.Token(Lexer.Type.R_TAG, ">")
+                new Lexer.Token(Lexer.Type.R_TAG, ">"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<"),
+                new Lexer.Token(Lexer.Type.L_END_TAG, "</"),
+                new Lexer.Token(Lexer.Type.L_START_TAG, "<")
         };
 
         Lexer.Token[] actual = Lexer.tokenise(input).toArray(new Lexer.Token[0]);

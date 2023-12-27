@@ -32,26 +32,30 @@ public class Lexer {
         int i = 0;
         boolean inTag = false;
         while (i < input.length()) {
-            char c = input.charAt(i);
-            if (c == '<' && i != input.length() - 1 && input.charAt(i + 1) != '/') {
-                tokens.add(new Token(Type.L_START_TAG, "<"));
-                inTag = true;
-                i++;
-            } else if (c == '<' && i != input.length() - 1 && input.charAt(i + 1) == '/') {
-                tokens.add(new Token(Type.L_END_TAG, "</"));
-                inTag = true;
-                i += 2;
-            } else if (c == '>' ) {
-                tokens.add(new Token(Type.R_TAG, ">"));
-                inTag = false;
-                i++;
-            } else {
-                StringBuilder sb = new StringBuilder();
-                while (i < input.length() && input.charAt(i) != '<' && input.charAt(i) != '>') {
-                    sb.append(input.charAt(i));
+            switch (input.charAt(i)) {
+                case '<':
+                    if (i == input.length() - 1 || input.charAt(i + 1) != '/') {
+                        tokens.add(new Token(Type.L_START_TAG, "<"));
+                        inTag = true;
+                        i++;
+                    } else if (i != input.length() - 1 && input.charAt(i + 1) == '/') {
+                        tokens.add(new Token(Type.L_END_TAG, "</"));
+                        inTag = true;
+                        i += 2;
+                    }
+                    break;
+                case '>':
+                    tokens.add(new Token(Type.R_TAG, ">"));
+                    inTag = false;
                     i++;
-                }
-                tokens.add(new Token(inTag ? Type.TAG_NAME: Type.CONTENT, sb.toString()));
+                    break;
+                default:
+                    StringBuilder sb = new StringBuilder();
+                    while (i < input.length() && input.charAt(i) != '<' && input.charAt(i) != '>') {
+                        sb.append(input.charAt(i));
+                        i++;
+                    }
+                    tokens.add(new Token(inTag ? Type.TAG_NAME: Type.CONTENT, sb.toString()));
             }
         }
         return tokens;
