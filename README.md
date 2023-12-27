@@ -26,3 +26,4 @@ Since the XML parser is a simple one, these are not supported:
 - XML entity references (`&lt;`, `&amp;` etc. are treated as normal text)
 - XML namespaces
 
+This also means that angle brackets (`<`, `>`) are not allowed as text, as they are treated as special characters in our syntax.
