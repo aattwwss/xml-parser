@@ -31,7 +31,7 @@ This also means that angle brackets (`<`, `>`) are not allowed as text, as they 
 ## Implementation
 I perform a basic lexical analysis on a string and breaks them down into meaningful tokens. With the tokens, I feed it through a syntax analyser to check if the tokens are in the correct order. If the syntax is correct, I will then build a tree structure to represent the XML document.
 
-## Tokens
+### Tokens
 The tokens are defined as follows:
 - L_START_TAG: `<`
 - R_TAG: `>`
@@ -39,7 +39,7 @@ The tokens are defined as follows:
 - TAG_NAME: `anything between < and > or </ and >`
 - CONTENT: `anything between > and </`
 
-## Syntax
+### Syntax
 The syntax is defined as follows:
 - A single root tag
 - Start with start tag, end with end tag
