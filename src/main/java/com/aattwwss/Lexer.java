@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
-    public static enum Type {
+    public enum Type {
         L_START_TAG,
         L_END_TAG,
         R_TAG,
